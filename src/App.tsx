@@ -1,0 +1,149 @@
+import { useMemo, useState } from 'react'
+import { UserInterface } from './components/userSelecter'
+import SelectedUserModal from './components/selectedUserModal'
+import { SelecteduserDataInterface, userDataInterface } from './Interfaces/interfaces'
+import './App.css'
+
+function App() {
+  const [userData, setUserData] = useState([
+    {} as userDataInterface
+  ])
+
+  const [userPosts, setUserPosts] = useState([
+    {} as userDataInterface
+  ])
+  const [openUserModal, setOpenUserModal] = useState(false)
+  const [SelecteduserData, setSelectedUserData] = useState(
+    {} as SelecteduserDataInterface
+  )
+  useMemo(() => {
+    fetch('https://jsonplaceholder.typicode.com/users')
+      .then(res => res.json()).then((data) => { console.log(data), setUserData(data) }).catch(console.error)
+
+  }, [])
+
+  const getPosts = (id: number) => {
+    try {
+      fetch("https://graphqlzero.almansi.me/api", {
+        "method": "POST",
+        "headers": { "content-type": "application/json" },
+        "body": JSON.stringify({
+          query: `query {
+        user(id: ${id}) {
+        posts {
+        data {
+         id
+          title
+              }
+            }
+          }
+        }`
+        })
+      }).then(res => res.json()).then(console.log)
+
+    } catch (error) {
+
+    }
+  }
+  const SelectUser = (id: number) => {
+    const selectedUser = userData.find((user) => user.id == id) as SelecteduserDataInterface
+    console.log(selectedUser)
+    setSelectedUserData(selectedUser)
+    setOpenUserModal(true)
+
+  }
+
+  return (
+    <main className='min-w-screen min-h-[100vh]'>
+
+      <div className=' border-4  rounded-4xl w-1/2 m-auto mt-20 h-[800px] p-5'>
+        <div className='flex flex-col p-5 m-auto gap-10'>
+          {userData.map(user => {
+            return (
+              <div>
+                <UserInterface key={user.id} props={user} selectuser={() => SelectUser(user.id)} />
+              </div>
+            )
+          })}
+        </div>
+
+        {openUserModal && <SelectedUserModal>
+          <h2 className=' text-2xl font-bold'>
+            {SelecteduserData.username}
+          </h2>
+          <div className='grid grid-rows-3 p-5 shadow-xl rounded-2xl'>
+            <div className='grid grid-cols-3 gap-3'>
+              <div className=''>
+                <span className=' font-bold'>Name:</span> {SelecteduserData.name}
+              </div>
+              <div className=''>
+                <span className=' font-bold'>Email:</span> {SelecteduserData.email}
+              </div>
+              <div className=''>
+                <span className=' font-bold'>Phone:</span> {SelecteduserData.phone}
+              </div>
+
+
+            </div>
+            <hr className='min-w-[100%] m-auto ' />
+            <div className='grid grid-cols-2'>
+              <span className='text-xl w-full pt-2'>
+                Address Info
+              </span>
+
+            </div>
+            <div className='grid grid-cols-2 gap-3 py-2'>
+              <div className=''>
+                <span className=' font-bold'>City:</span> {SelecteduserData.address.city}
+              </div>
+              <div className=''>
+                <span className=' font-bold'>Street:</span> {SelecteduserData.address.street}
+              </div>
+              <div className=''>
+                <span className=' font-bold'>Suite:</span> {SelecteduserData.address.suite}
+              </div>
+              <div className=''>
+                <span className=' font-bold'>Zipcode:</span> {SelecteduserData.address.zipcode}
+              </div>
+              <div className=''>
+                <span className=' font-bold'>Geo-Location:</span> {SelecteduserData.address.geo.lat + "," + SelecteduserData.address.geo.lng}
+              </div>
+
+            </div>
+            <hr className='min-w-[700px] max-w-[700px] m-auto' />
+            <div className='grid grid-cols-2'>
+              <span className='text-xl w-full pt-2'>
+                Company Info
+              </span>
+            </div>
+            <div className='grid grid-cols-2 gap-3 py-2'>
+              <div className=''>
+                <span className=' font-bold'>Company Name:</span> {SelecteduserData.company.name}
+              </div>
+              <div className=''>
+                <span className=' font-bold'>Company CatchPhrase:</span> {SelecteduserData.company.catchPhrase}
+              </div>
+              <div className=''>
+                <span className=' font-bold'>Company bs:</span> {SelecteduserData.company.bs}
+              </div>
+              <div className=''>
+                <span className=' font-bold'>Website:</span> {SelecteduserData.website}
+              </div>
+
+
+            </div>
+            <div className='w-full m-auto pt-5'>
+              <button onClick={() => getPosts(SelecteduserData.id)} className=' w-[100px] ms-0 h-[50px] bg-lime-200 rounded-md'>
+                See Posts
+              </button>
+            </div>
+          </div>
+
+
+        </SelectedUserModal>}
+      </div>
+    </main>
+  )
+}
+
+export default App
