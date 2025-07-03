@@ -40,3 +40,15 @@ export interface company {
     "catchPhrase": string,
     "bs": string
 }
+export interface Posts {
+
+    "id": number,
+    "title": string
+
+}[]
+export interface PostI {
+
+    "id": number,
+    "title": string
+
+}

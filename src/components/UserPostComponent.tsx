@@ -1,12 +1,18 @@
 
-import { userDataInterface } from "../Interfaces/interfaces";
+import {PostI, Posts, userDataInterface } from "../Interfaces/interfaces";
 
-export const UserInterface = ({props,selectuser}:{props:userDataInterface,selectuser(id:number)}) => {
+export const UserPostsInterface = ({props, author}:{props:PostI, author:string}) => {
 
     return(
-        <div className="border-2 w-[60%] m-auto h-[30px]" onClick={()=>selectuser(props.id)}>
+        <div className="border-2 w-[90%] m-auto  h-[100px] rounded-2xl " >
             <div className="m-auto text-center">
-            {props.username}
+            {props.id}
+            </div>
+               <div className="m-auto text-center p-3">
+            {props.title}
+            </div>
+              <div className="m-auto text-center">
+            <span className="text-center font-bold">Author: </span>{author}
             </div>
         </div>
     )
